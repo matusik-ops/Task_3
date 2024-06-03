@@ -1,0 +1,52 @@
+version: '3.9'
+
+services:
+  reverse_proxy:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - web_1
+      - web_2
+      - web_3
+    networks:
+      - proxy_net
+    restart: always
+
+  web_1:
+    image: nginx:latest
+    networks:
+      - proxy_net
+    labels:
+      - "com.docker.compose.service=web_1"
+    restart: unless-stopped
+    
+    volumes:
+      - /home/ubuntu/index_html/Task_2/index1.html:/usr/share/nginx/html/index.html
+    
+  web_2:
+    image: nginx:latest
+    networks:
+      - proxy_net
+    labels:
+      - "com.docker.compose.service=backend2"
+    volumes:
+      - /home/ubuntu/index_html/Task_2/index2.html:/usr/share/nginx/html/index.html
+    restart: unless-stopped
+  
+  web_3:
+    image: nginx:latest
+    networks:
+      - proxy_net
+    labels:
+      - "com.docker.compose.service=backend3"
+    volumes:
+      - /home/ubuntu/index_html/Task_2/index3.html:/usr/share/nginx/html/index.html
+    restart: unless-stopped
+
+networks:
+  proxy_net:
+    driver: bridge
+ 
